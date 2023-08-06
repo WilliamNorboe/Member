@@ -25,6 +25,24 @@ const User = mongoose.model(
   })
 );
 
+const Message = mongoose.model(
+  "Message",
+  new Schema({
+    text: { type: String, required: true },
+    date: { type: Date, required: true },
+    author: { type: String, required: true },
+  })
+);
+
+const Messages = mongoose.model(
+  "Messages",
+  new Schema({
+    text: { type: String, required: true },
+    date: { type: Date, required: true },
+    author: { type: String, required: true },
+  })
+);
+
 passport.serializeUser(function(user, done) {
     done(null, user.id);
   });
@@ -65,6 +83,16 @@ app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 app.use(function(req, res, next) {
     res.locals.currentUser = req.user;
+    Message.find({}, ).then((r)=>{
+      var userMap = [];
+      let i = 0;
+      r.forEach(function(user) {
+        userMap[i] = user;
+        i++;
+      });
+      res.locals.messages = userMap;
+      next();
+    });
     next();
   });
 
@@ -73,6 +101,8 @@ app.get("/", (req, res) => {
   });
 app.get("/sign-up", (req, res) => res.render("sign-up-form"));
 app.get("/join", (req, res) => res.render("join-the-club"));
+app.get("/create", (req, res) => res.render("create-message"));
+
 
 app.post("/sign-up", async (req, res, next) => {
     let te = await User.exists({username: req.body.username}); // user already exists
@@ -89,6 +119,21 @@ app.post("/sign-up", async (req, res, next) => {
         membership: false
       });
       const result = await user.save();
+      res.redirect("/");
+    } catch(err) {
+      return next(err);
+    };
+  });
+
+  app.post("/create", async (req, res, next) => {
+    console.log(req.user.username);
+    try {
+      const message = new Message({
+        text: req.body.content,
+        date: new Date(),
+        author: req.user.username
+      });
+      const result = await message.save();
       res.redirect("/");
     } catch(err) {
       return next(err);

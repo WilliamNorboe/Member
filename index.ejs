@@ -8,6 +8,19 @@
   <% if (user) {%>
     <h1>WELCOME BACK <%= user.firstname %> <%= user.lastname %></h1>
     <a href="/log-out">LOG OUT</a>
+    <a href = "/create">Create New Message</a>
+    <div class = "messages"></div>
+
+    <% for (var i = 0; i < messages.length; i++) { %>
+      <li class="timeline-yellow">
+          <div class="timeline-time">
+              <span class="date" style="text-align:left">
+              <%= messages[i].text %>
+              </span>
+          </div>
+      </li>
+      <% } %>
+
   <% } else { %>
     <h1>please log in</h1>
     <form action="/log-in" method="POST">

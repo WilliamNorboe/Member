@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+  <% if (currentUser) {%>
+    <h1>Create a Message</h1>
+    <form action="" method="POST">
+      <label for="content">Username</label>
+      <textarea name="content" placeholder="" type="text"></textarea>
+      <button>Send Message</button>
+    </form>
+  <% } else { %>
+    <div>You need to <a href = "/">log-in</a> to create messages</div>
+  <%}%>
+</body>
+</html>
