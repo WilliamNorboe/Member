@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
+  <link rel = "stylesheet" href = "style.css" type = "text/css" />
 </head>
 <body>
   <% if (user) {%>
@@ -11,15 +12,23 @@
     <a href = "/create">Create New Message</a>
     <div class = "messages"></div>
 
-    <% for (var i = 0; i < messages.length; i++) { %>
-      <li class="timeline-yellow">
-          <div class="timeline-time">
-              <span class="date" style="text-align:left">
-              <%= messages[i].text %>
-              </span>
-          </div>
-      </li>
+    <% for (var i = messages.length-1; i >= 0; i--) { %>
+      <div class = "message">
+      <% if (user.membership) {%>
+          <p>Author: <%= messages[i].author %> </p>
+          <p>Date: <%= messages[i].date %></p>
       <% } %>
+        <p><%= messages[i].text %></p>
+      <% if (user.admin) {%>
+        <form method="post" action="/delete" class="inline">
+          <input type="hidden" name="extra_submit_param" value="extra_submit_value">
+          <button type="submit" name="id" value=<%= messages[i]._id %> class="link-button">
+            Delete
+          </button>
+        </form>
+      <% } %>
+      </div>
+    <% } %>
 
   <% } else { %>
     <h1>please log in</h1>
@@ -30,6 +39,7 @@
       <input name="password" type="password" />
       <button>Log In</button>
     </form>
+    <a href = "/sign-up">Sign-Up</a>
   <%}%>
 </body>
 </html>

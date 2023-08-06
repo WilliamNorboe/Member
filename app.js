@@ -21,21 +21,13 @@ const User = mongoose.model(
     password: { type: String, required: true },
     firstname: { type: String, required: true },
     lastname: { type: String, required: true },
-    membership: { type: Boolean, required: true }
+    membership: { type: Boolean, required: true },
+    admin: { type: Boolean, required: true }
   })
 );
 
 const Message = mongoose.model(
   "Message",
-  new Schema({
-    text: { type: String, required: true },
-    date: { type: Date, required: true },
-    author: { type: String, required: true },
-  })
-);
-
-const Messages = mongoose.model(
-  "Messages",
   new Schema({
     text: { type: String, required: true },
     date: { type: Date, required: true },
@@ -59,6 +51,7 @@ passport.serializeUser(function(user, done) {
 const app = express();
 app.set("views", __dirname);
 app.set("view engine", "ejs");
+app.use(express.static(__dirname + '/')); // css
 
 passport.use(
     new LocalStrategy(async(username, password, done) => {
@@ -93,7 +86,6 @@ app.use(function(req, res, next) {
       res.locals.messages = userMap;
       next();
     });
-    next();
   });
 
 app.get("/", (req, res) => {
@@ -116,7 +108,8 @@ app.post("/sign-up", async (req, res, next) => {
         password: req.body.password,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
-        membership: false
+        membership: false,
+        admin: false
       });
       const result = await user.save();
       res.redirect("/");
@@ -163,6 +156,12 @@ app.post("/sign-up", async (req, res, next) => {
       failureRedirect: "/"
     })
   );
+
+  app.post("/delete", async (req, res, next) => {
+    console.log(req.body.id);
+    await Message.deleteOne({ _id: req.body.id });
+    res.redirect("/");
+  });
 
   app.get("/log-out", (req, res, next) => {
     req.logout(function (err) {
